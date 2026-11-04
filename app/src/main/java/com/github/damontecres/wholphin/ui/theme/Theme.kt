@@ -11,11 +11,12 @@ import com.github.damontecres.wholphin.ui.theme.colors.BrownThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.GreenThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.OledThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.OrangeThemeColors
+import com.github.damontecres.wholphin.ui.theme.colors.PoobThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.PurpleThemeColors
 import com.github.damontecres.wholphin.ui.theme.colors.RedThemeColors
 
 val LocalTheme =
-    compositionLocalOf<AppThemeColors> { AppThemeColors.PURPLE }
+    compositionLocalOf<AppThemeColors> { AppThemeColors.POOB }
 
 fun getThemeColors(appThemeColors: AppThemeColors): ThemeColors =
     when (appThemeColors) {
@@ -27,13 +28,14 @@ fun getThemeColors(appThemeColors: AppThemeColors): ThemeColors =
         AppThemeColors.BOLD_BLUE -> BoldBlueThemeColors
         AppThemeColors.RED -> RedThemeColors
         AppThemeColors.BROWN -> BrownThemeColors
+        AppThemeColors.POOB -> PoobThemeColors
         AppThemeColors.UNRECOGNIZED -> PurpleThemeColors
     }
 
 @Composable
 fun WholphinTheme(
     darkTheme: Boolean = true,
-    appThemeColors: AppThemeColors = AppThemeColors.PURPLE,
+    appThemeColors: AppThemeColors = AppThemeColors.POOB,
     content: @Composable () -> Unit,
 ) {
     val themeColors = getThemeColors(appThemeColors)

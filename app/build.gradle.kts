@@ -70,7 +70,7 @@ configure<ApplicationExtension> {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.github.damontecres.wholphin"
+        applicationId = "com.dhgamerworld.poobfin"
         minSdk = 23
         targetSdk = 36
         versionCode = gitTags.trim().lines().size
@@ -143,13 +143,13 @@ configure<ApplicationExtension> {
         }
         create("default") {
             dimension = "version"
-            isDefault = true
             manifestPlaceholders += mapOf(featureLeanback to false)
             setFeatureFlag(featureUpdate, true)
             setFeatureFlag(featureDiscover, true)
         }
         create("appstore") {
             dimension = "version"
+            isDefault = true
             manifestPlaceholders += mapOf(featureLeanback to true)
             setFeatureFlag(featureUpdate, false)
             setFeatureFlag(featureDiscover, true)

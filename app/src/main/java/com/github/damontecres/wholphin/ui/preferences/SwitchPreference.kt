@@ -71,6 +71,7 @@ fun SwitchColors(): SwitchColors {
         AppThemeColors.UNRECOGNIZED,
         AppThemeColors.PURPLE,
         AppThemeColors.BLUE,
+        AppThemeColors.POOB,
         -> {
             SwitchDefaults.colors()
         }
