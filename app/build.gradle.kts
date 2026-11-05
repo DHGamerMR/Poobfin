@@ -50,7 +50,11 @@ val gitTags =
 
 val gitDescribe =
     providers
-        .exec { commandLine("git", "describe", "--tags", "--long", "--match=v*") }
+        .exec {
+            commandLine("git", "describe", "--tags", "--long", "--match=v*")
+            // Forks/clones without tags would otherwise fail the build; versionName falls back to 0.0.0
+            isIgnoreExitValue = true
+        }
         .standardOutput.asText
         .getOrElse("v0.0.0")
 
