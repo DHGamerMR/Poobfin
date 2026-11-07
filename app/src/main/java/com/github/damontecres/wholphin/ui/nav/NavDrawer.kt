@@ -92,6 +92,7 @@ import com.github.damontecres.wholphin.ui.components.poobNavSelectedFrame
 import com.github.damontecres.wholphin.ui.components.poobOrange
 import com.github.damontecres.wholphin.ui.components.poobSidebarColor
 import com.github.damontecres.wholphin.ui.theme.LocalTheme
+import com.github.damontecres.wholphin.ui.theme.SeussFont
 import com.github.damontecres.wholphin.ui.toServerString
 import com.github.damontecres.wholphin.ui.tryRequestFocus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -340,7 +341,11 @@ fun NavDrawer(
             val spacedBy = 4.dp
             val searchFocusRequester = remember { FocusRequester() }
 
-            ProvideTextStyle(MaterialTheme.typography.labelMedium) {
+            ProvideTextStyle(
+                MaterialTheme.typography.labelMedium.let {
+                    if (isPoobTheme()) it.copy(fontFamily = SeussFont) else it
+                },
+            ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(spacedBy),

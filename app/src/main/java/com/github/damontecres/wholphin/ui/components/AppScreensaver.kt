@@ -246,7 +246,7 @@ fun AppScreensaverContent(
             }
         }
         if (showClock) {
-            TimeDisplay()
+            TimeDisplay(decorated = false)
         }
     }
 }

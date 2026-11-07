@@ -52,7 +52,7 @@ fun WholphinTheme(
         ) {
             MaterialTheme(
                 colorScheme = colorScheme,
-                typography = AppTypography,
+                typography = if (appThemeColors == AppThemeColors.POOB) PoobTypography else AppTypography,
                 content = content,
             )
         }

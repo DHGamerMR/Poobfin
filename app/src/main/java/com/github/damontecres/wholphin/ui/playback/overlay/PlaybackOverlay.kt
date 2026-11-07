@@ -319,7 +319,7 @@ fun PlaybackOverlay(
                 Modifier
                     .align(Alignment.TopEnd),
         ) {
-            TimeDisplay()
+            TimeDisplay(decorated = false)
         }
 
         // Debug overlay
