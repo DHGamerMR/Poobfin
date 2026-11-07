@@ -1,5 +1,7 @@
 package com.github.damontecres.wholphin.ui.cards
 
+import com.github.damontecres.wholphin.ui.components.poobCardFocusFrame
+import com.github.damontecres.wholphin.ui.components.themedCardBorder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -59,11 +61,13 @@ fun ChapterCard(
             )
         }
     var width by remember { mutableStateOf(AspectRatios.WIDE * cardHeight) }
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     Card(
-        modifier = modifier.height(cardHeight),
+        modifier = modifier.height(cardHeight).poobCardFocusFrame(interactionSource),
         onClick = onClick,
         onLongClick = onLongClick,
         interactionSource = interactionSource,
+        border = themedCardBorder(),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(

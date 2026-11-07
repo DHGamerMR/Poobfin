@@ -1,5 +1,7 @@
 package com.github.damontecres.wholphin.ui.cards
 
+import com.github.damontecres.wholphin.ui.components.themedCardBorder
+import com.github.damontecres.wholphin.ui.components.poobCardFocusFrame
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -83,10 +85,12 @@ fun DiscoverItemCard(
             modifier =
                 Modifier
                     .size(width, Dp.Unspecified)
-                    .aspectRatio(AspectRatios.TALL),
+                    .aspectRatio(AspectRatios.TALL)
+                    .poobCardFocusFrame(interactionSource),
             onClick = onClick,
             onLongClick = onLongClick,
             interactionSource = interactionSource,
+            border = themedCardBorder(),
             colors =
                 CardDefaults.colors(
                     containerColor = Color.Transparent,

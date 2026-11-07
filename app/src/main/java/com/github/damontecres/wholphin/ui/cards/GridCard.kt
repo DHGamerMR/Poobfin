@@ -1,5 +1,7 @@
 package com.github.damontecres.wholphin.ui.cards
 
+import com.github.damontecres.wholphin.ui.components.themedCardBorder
+import com.github.damontecres.wholphin.ui.components.poobCardFocusFrame
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -73,10 +75,11 @@ fun GridCard(
         modifier = modifier,
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().poobCardFocusFrame(interactionSource),
             onClick = onClick,
             onLongClick = onLongClick,
             interactionSource = interactionSource,
+            border = themedCardBorder(),
             colors =
                 CardDefaults.colors(
                     containerColor = Color.Transparent,

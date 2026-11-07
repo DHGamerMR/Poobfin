@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -85,6 +86,11 @@ import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.preferences.PreferenceScreenOption
 import com.github.damontecres.wholphin.ui.setup.UserIconCardImage
 import com.github.damontecres.wholphin.ui.spacedByWithFooter
+import com.github.damontecres.wholphin.ui.components.PoobBrand
+import com.github.damontecres.wholphin.ui.components.isPoobTheme
+import com.github.damontecres.wholphin.ui.components.poobNavSelectedFrame
+import com.github.damontecres.wholphin.ui.components.poobOrange
+import com.github.damontecres.wholphin.ui.components.poobSidebarColor
 import com.github.damontecres.wholphin.ui.theme.LocalTheme
 import com.github.damontecres.wholphin.ui.toServerString
 import com.github.damontecres.wholphin.ui.tryRequestFocus
@@ -338,7 +344,12 @@ fun NavDrawer(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(spacedBy),
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier =
+                        Modifier
+                            .fillMaxHeight()
+                            .then(
+                                if (isPoobTheme()) Modifier.background(poobSidebarColor()) else Modifier,
+                            ),
                 ) {
                     // Even though some must be clicked, focusing on it should clear other focused items
                     val interactionSource = remember { MutableInteractionSource() }
@@ -573,10 +584,12 @@ fun NavigationDrawerScope.ProfileIcon(
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+    val focused by interactionSource.collectIsFocusedAsState()
     NavigationDrawerItem(
-        modifier = modifier,
+        modifier = modifier.poobNavSelectedFrame(selected = false, focused = focused),
         selected = false,
         onClick = onClick,
+        colors = navDrawerItemColors(),
         leadingContent = {
             UserIconCardImage(
                 id = user.id,
@@ -615,9 +628,10 @@ fun NavigationDrawerScope.IconNavItem(
 ) {
     val focused by interactionSource.collectIsFocusedAsState()
     NavigationDrawerItem(
-        modifier = modifier,
+        modifier = modifier.poobNavSelectedFrame(selected, focused),
         selected = false,
         onClick = onClick,
+        colors = navDrawerItemColors(),
         leadingContent = {
             val color = navItemColor(selected, focused, drawerOpen)
             Icon(
@@ -690,13 +704,10 @@ fun NavigationDrawerScope.NavItem(
         }
     val focused by interactionSource.collectIsFocusedAsState()
     NavigationDrawerItem(
-        modifier = modifier,
+        modifier = modifier.poobNavSelectedFrame(selected, focused),
         selected = false,
         onClick = onClick,
-        colors =
-            NavigationDrawerItemDefaults.colors(
-                containerColor = containerColor,
-            ),
+        colors = navDrawerItemColors(containerColor),
         leadingContent = {
             val color = navItemColor(selected, focused, drawerOpen)
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -740,6 +751,25 @@ fun NavigationDrawerScope.NavItem(
     }
 }
 
+/**
+ * Item colors for the sidebar. On the Poob theme the sidebar is cream, so text is dark and the
+ * focused item has no fill (the orange outline comes from poobNavSelectedFrame).
+ */
+@Composable
+fun navDrawerItemColors(containerColor: Color = Color.Unspecified) =
+    if (isPoobTheme()) {
+        val dark = MaterialTheme.colorScheme.inverseOnSurface
+        NavigationDrawerItemDefaults.colors(
+            containerColor = containerColor,
+            contentColor = dark,
+            inactiveContentColor = dark.copy(alpha = .75f),
+            focusedContainerColor = Color.Transparent,
+            focusedContentColor = dark,
+        )
+    } else {
+        NavigationDrawerItemDefaults.colors(containerColor = containerColor)
+    }
+
 @Composable
 @ReadOnlyComposable
 fun navItemColor(
@@ -756,6 +786,14 @@ fun navItemColor(
             focused -> Color.Black.copy(alpha = .5f)
             drawerOpen -> Color(0xFF707070)
             else -> Color(0xFF505050).copy(alpha = .66f)
+        }
+    } else if (theme == AppThemeColors.POOB) {
+        // Sidebar is orange on Poob; the selected item sits in a teal pill
+        return when {
+            focused -> LocalContentColor.current
+            selected -> PoobBrand.Cream
+            drawerOpen -> PoobBrand.Brown
+            else -> PoobBrand.Brown.copy(alpha = .75f)
         }
     } else {
         val alpha =

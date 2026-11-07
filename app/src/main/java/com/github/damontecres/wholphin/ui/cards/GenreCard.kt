@@ -1,5 +1,7 @@
 package com.github.damontecres.wholphin.ui.cards
 
+import com.github.damontecres.wholphin.ui.components.themedCardBorder
+import com.github.damontecres.wholphin.ui.components.poobCardFocusFrame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -63,10 +65,11 @@ fun GenreCard(
 ) {
     val background = rememberIdColor(genreId).copy(alpha = .6f)
     Card(
-        modifier = modifier,
+        modifier = modifier.poobCardFocusFrame(interactionSource),
         onClick = onClick,
         onLongClick = onLongClick,
         interactionSource = interactionSource,
+        border = themedCardBorder(),
         colors =
             CardDefaults.colors(
                 containerColor = Color.Transparent,

@@ -1,5 +1,7 @@
 package com.github.damontecres.wholphin.ui.cards
 
+import com.github.damontecres.wholphin.ui.components.themedCardBorder
+import com.github.damontecres.wholphin.ui.components.poobCardFocusFrame
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -84,10 +86,12 @@ fun ViewMoreCard(
             modifier =
                 Modifier
                     .size(width, height)
-                    .aspectRatio(aspectRatio.ratio),
+                    .aspectRatio(aspectRatio.ratio)
+                    .poobCardFocusFrame(interactionSource),
             onClick = onClick,
             onLongClick = onLongClick,
             interactionSource = interactionSource,
+            border = themedCardBorder(),
             colors =
                 CardDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),

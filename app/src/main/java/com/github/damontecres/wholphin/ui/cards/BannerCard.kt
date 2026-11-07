@@ -1,5 +1,7 @@
 package com.github.damontecres.wholphin.ui.cards
 
+import com.github.damontecres.wholphin.ui.components.themedCardBorder
+import com.github.damontecres.wholphin.ui.components.poobCardFocusFrame
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -103,11 +105,13 @@ fun BannerCard(
     val currentOnClick by rememberUpdatedState(onClick)
     val currentOnLongClick by rememberUpdatedState(onLongClick)
 
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     Card(
-        modifier = modifier.size(cardHeight * aspectRatio, cardHeight),
+        modifier = modifier.size(cardHeight * aspectRatio, cardHeight).poobCardFocusFrame(interactionSource),
         onClick = { currentOnClick() },
         onLongClick = { currentOnLongClick() },
         interactionSource = interactionSource,
+        border = themedCardBorder(),
         colors =
             CardDefaults.colors(
 //                containerColor = Color.Transparent,
