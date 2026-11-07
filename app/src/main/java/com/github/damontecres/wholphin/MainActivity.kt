@@ -56,6 +56,7 @@ import com.github.damontecres.wholphin.services.tvprovider.TvProviderSchedulerSe
 import com.github.damontecres.wholphin.ui.CoilConfig
 import com.github.damontecres.wholphin.ui.LocalImageUrlService
 import com.github.damontecres.wholphin.ui.collectLatestIn
+import com.github.damontecres.wholphin.ui.components.LaunchVideo
 import com.github.damontecres.wholphin.ui.components.LoadingPage
 import com.github.damontecres.wholphin.ui.launchDefault
 import com.github.damontecres.wholphin.ui.nav.Destination
@@ -152,6 +153,9 @@ class MainActivity : AppCompatActivity() {
     private var signInAuto = true
     private var playerBackend: PlayerBackend? = null
 
+    /** Whether the Poob launch video is currently covering the app */
+    private var showLaunchVideo by mutableStateOf(false)
+
     private val json =
         Json {
             classDiscriminator = "_type"
@@ -227,67 +231,79 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.appStart(intent)
+        // Only on a fresh launch from the launcher, not on recreation or deep links (e.g. external playback)
+        showLaunchVideo = savedInstanceState == null && intent?.action == Intent.ACTION_MAIN
         setContent {
-            Surface(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Black),
-            ) {
-                val userPreferences by userPreferencesService.flow.collectAsState(null)
-                if (userPreferences == null) {
-                    // Show loading page if it is taking a while to get app preferences
-                    var showLoading by remember { mutableStateOf(false) }
-                    LaunchedEffect(Unit) {
-                        delay(500.milliseconds)
-                        Timber.i("Showing loading page")
-                        showLoading = true
-                    }
-                    if (showLoading) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black),
-                        ) {
-                            LoadingPage()
+            Box(Modifier.fillMaxSize()) {
+                Surface(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Black),
+                ) {
+                    val userPreferences by userPreferencesService.flow.collectAsState(null)
+                    if (userPreferences == null) {
+                        // Show loading page if it is taking a while to get app preferences
+                        var showLoading by remember { mutableStateOf(false) }
+                        LaunchedEffect(Unit) {
+                            delay(500.milliseconds)
+                            Timber.i("Showing loading page")
+                            showLoading = true
                         }
-                    }
-                } else {
-                    userPreferences?.let { userPreferences ->
-                        val appPreferences = userPreferences.appPreferences
-                        CoilConfig(
-                            prefs = appPreferences,
-                            okHttpClient = okHttpClient,
-                            debugLogging = false,
-                            enableCache = true,
-                        )
-                        LaunchedEffect(appPreferences.debugLogging) {
-                            DebugLogTree.INSTANCE.enabled = appPreferences.debugLogging
-                        }
-                        CompositionLocalProvider(LocalImageUrlService provides imageUrlService) {
-                            WholphinTheme(
-                                true,
-                                appThemeColors = appPreferences.interfacePreferences.appThemeColors,
+                        if (showLoading) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black),
                             ) {
-                                ProvideLocalClock {
-                                    MainContent(
-                                        backStack = setupNavigationManager.backStack,
-                                        navigationManager = navigationManager,
-                                        userPreferences = userPreferences,
-                                        backdropService = backdropService,
-                                        screensaverService = screensaverService,
-                                        modifier = Modifier.fillMaxSize(),
-                                    )
+                                LoadingPage()
+                            }
+                        }
+                    } else {
+                        userPreferences?.let { userPreferences ->
+                            val appPreferences = userPreferences.appPreferences
+                            CoilConfig(
+                                prefs = appPreferences,
+                                okHttpClient = okHttpClient,
+                                debugLogging = false,
+                                enableCache = true,
+                            )
+                            LaunchedEffect(appPreferences.debugLogging) {
+                                DebugLogTree.INSTANCE.enabled = appPreferences.debugLogging
+                            }
+                            CompositionLocalProvider(LocalImageUrlService provides imageUrlService) {
+                                WholphinTheme(
+                                    true,
+                                    appThemeColors = appPreferences.interfacePreferences.appThemeColors,
+                                ) {
+                                    ProvideLocalClock {
+                                        MainContent(
+                                            backStack = setupNavigationManager.backStack,
+                                            navigationManager = navigationManager,
+                                            userPreferences = userPreferences,
+                                            backdropService = backdropService,
+                                            screensaverService = screensaverService,
+                                            modifier = Modifier.fillMaxSize(),
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                if (showLaunchVideo) {
+                    LaunchVideo(onFinished = { showLaunchVideo = false })
                 }
             }
         }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (showLaunchVideo) {
+            // Any key skips the intro; consume it so it doesn't reach the app underneath
+            if (event.action == KeyEvent.ACTION_UP) showLaunchVideo = false
+            return true
+        }
         if (screensaverService.state.value.show) {
             screensaverService.stop(false)
             screensaverService.pulse()
